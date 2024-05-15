@@ -1,62 +1,71 @@
 <template>
   <div class="chat-container">
-
     <div class="chat-messages" ref="chatMessages">
-      <div class="message" v-for="(message, index) in messages" :key="index" :class="{ 'user-message': message.sender === 'user', 'responder-message': message.sender === 'responder' }">
+      <div
+        class="message"
+        v-for="(message, index) in messages"
+        :key="index"
+        :class="{
+          'user-message': message.sender === 'user',
+          'responder-message': message.sender === 'responder',
+        }"
+      >
         {{ message.content }}
       </div>
     </div>
     <div class="message-box">
-      <input type="text" v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type your message...">
+      <input
+        type="text"
+        v-model="newMessage"
+        @keyup.enter="sendMessage"
+        placeholder="Type your message..."
+      />
       <button @click="sendMessage">Send</button>
     </div>
   </div>
 </template>
 
-
-
 <script>
-import axios from 'axios';
+import axios from "axios";
 import { imageApiUrl } from "../settings";
 
 export default {
   data() {
     return {
       messages: [],
-      newMessage: ''
+      newMessage: "",
     };
   },
   methods: {
     async sendMessage() {
-      if (this.newMessage.trim() === '') return;
+      if (this.newMessage.trim() === "") return;
 
       // Add user message to the chat
       this.messages.push({
         content: this.newMessage,
-        sender: 'user'
+        sender: "user",
       });
-
 
       // Scroll to bottom of chat messages
       this.$refs.chatMessages.scrollTop = this.$refs.chatMessages.scrollHeight;
-      
+
       try {
         const response = await axios.post(`${imageApiUrl}chat`, {
-          message: this.newMessage
+          message: this.newMessage,
         });
-        console.log(response)
+        console.log(response);
         this.messages.push({
           content: response.data,
-          sender: 'responder'
+          sender: "responder",
         });
-        this.$refs.chatMessages.scrollTop = this.$refs.chatMessages.scrollHeight;
+        this.$refs.chatMessages.scrollTop =
+          this.$refs.chatMessages.scrollHeight;
       } catch (error) {
-        console.error('Error sending message:', error);
-
+        console.error("Error sending message:", error);
       }
-      this.newMessage = '';
-    }
-  }
+      this.newMessage = "";
+    },
+  },
 };
 </script>
 
